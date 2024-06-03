@@ -1,0 +1,9 @@
+C:\Users\inter\OneDrive\Desktop\own\memory-ui\memory-ui\x64\Debug\memory-ui.vcxproj.AssemblyReference.cache
+C:\Users\inter\OneDrive\Desktop\own\memory-ui\memory-ui\x64\Debug\memoryui.MyForm.resources
+C:\Users\inter\OneDrive\Desktop\own\memory-ui\memory-ui\x64\Debug\memory-ui.vcxproj.GenerateResource.cache
+C:\Users\Anton\Desktop\memory-ui\memory-ui\x64\Debug\memory-ui.vcxproj.AssemblyReference.cache
+C:\Users\Anton\Desktop\memory-ui\memory-ui\x64\Debug\memoryui.MyForm.resources
+C:\Users\Anton\Desktop\memory-ui\memory-ui\x64\Debug\memory-ui.vcxproj.GenerateResource.cache
+C:\Users\Anton\Desktop\memory\memory-ui\x64\Debug\memory-ui.vcxproj.AssemblyReference.cache
+C:\Users\Anton\Desktop\memory\memory-ui\x64\Debug\memoryui.MyForm.resources
+C:\Users\Anton\Desktop\memory\memory-ui\x64\Debug\memory-ui.vcxproj.GenerateResource.cache
