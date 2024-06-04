@@ -3,7 +3,14 @@
 #include <Windows.h>
 #include "Memory.h"
 #include <msclr/marshal_cppstd.h>
-#include <psapi.h>
+#include <sstream>
+#include <iomanip>
+#include <bitset>
+#include <fstream>
+#include <string>
+#include <cstdint>
+#include <vector>
+
 
 namespace memoryui {
 	using namespace System;
@@ -12,6 +19,7 @@ namespace memoryui {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::Windows::Forms::DataVisualization::Charting;
 
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
@@ -21,6 +29,8 @@ namespace memoryui {
 			InitializeComponent();
 			memory = new Memory(100);
 			InitializeMemoryGridView();
+			InitializeChart();
+			InitializeTimer();
 		}
 
 	protected:
@@ -41,14 +51,15 @@ namespace memoryui {
 	private: System::Windows::Forms::Button^ btnLoadFile;
 	protected:
 	private: System::Windows::Forms::TextBox^ textBox1;
-	private: System::Windows::Forms::Label^ label1;
+
 	private: System::Windows::Forms::TextBox^ textBox2;
 	private: System::Windows::Forms::Label^ label3;
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::Button^ btnDeleteAll;
 	private: System::Windows::Forms::Timer^ timer1;
-	private: System::Windows::Forms::Panel^ panel1;
-	private: System::Windows::Forms::PictureBox^ pictureBox1;
+
+	private: System::Windows::Forms::DataVisualization::Charting::Chart^ chart1;
+
 	private: System::ComponentModel::IContainer^ components;
 
 	private:
@@ -57,29 +68,30 @@ namespace memoryui {
 		void InitializeComponent(void)
 		{
 			this->components = (gcnew System::ComponentModel::Container());
+			System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea1 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+			System::Windows::Forms::DataVisualization::Charting::Legend^ legend1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
+			System::Windows::Forms::DataVisualization::Charting::Series^ series1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Series());
 			this->dataGridView1 = (gcnew System::Windows::Forms::DataGridView());
 			this->btnWrite = (gcnew System::Windows::Forms::Button());
 			this->btnDelete = (gcnew System::Windows::Forms::Button());
 			this->btnLoadFile = (gcnew System::Windows::Forms::Button());
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
-			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->textBox2 = (gcnew System::Windows::Forms::TextBox());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->btnDeleteAll = (gcnew System::Windows::Forms::Button());
 			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
-			this->panel1 = (gcnew System::Windows::Forms::Panel());
-			this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
+			this->chart1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->BeginInit();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// dataGridView1
 			// 
 			this->dataGridView1->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-			this->dataGridView1->Location = System::Drawing::Point(12, 130);
+			this->dataGridView1->Location = System::Drawing::Point(12, 105);
 			this->dataGridView1->Name = L"dataGridView1";
-			this->dataGridView1->Size = System::Drawing::Size(359, 324);
+			this->dataGridView1->Size = System::Drawing::Size(359, 349);
 			this->dataGridView1->TabIndex = 0;
 			// 
 			// btnWrite
@@ -118,34 +130,24 @@ namespace memoryui {
 			// textBox1
 			// 
 			this->textBox1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14));
-			this->textBox1->Location = System::Drawing::Point(12, 43);
+			this->textBox1->Location = System::Drawing::Point(12, 18);
 			this->textBox1->Name = L"textBox1";
-			this->textBox1->Size = System::Drawing::Size(766, 29);
+			this->textBox1->Size = System::Drawing::Size(359, 29);
 			this->textBox1->TabIndex = 4;
-			// 
-			// label1
-			// 
-			this->label1->AutoSize = true;
-			this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic))));
-			this->label1->Location = System::Drawing::Point(7, 0);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(137, 26);
-			this->label1->TabIndex = 6;
-			this->label1->Text = L"PC Memory";
 			// 
 			// textBox2
 			// 
 			this->textBox2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14));
-			this->textBox2->Location = System::Drawing::Point(12, 95);
+			this->textBox2->Location = System::Drawing::Point(12, 70);
 			this->textBox2->Name = L"textBox2";
-			this->textBox2->Size = System::Drawing::Size(766, 29);
+			this->textBox2->Size = System::Drawing::Size(359, 29);
 			this->textBox2->TabIndex = 7;
 			// 
 			// label3
 			// 
 			this->label3->AutoSize = true;
 			this->label3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10));
-			this->label3->Location = System::Drawing::Point(10, 76);
+			this->label3->Location = System::Drawing::Point(10, 51);
 			this->label3->Name = L"label3";
 			this->label3->Size = System::Drawing::Size(61, 17);
 			this->label3->TabIndex = 8;
@@ -155,7 +157,7 @@ namespace memoryui {
 			// 
 			this->label2->AutoSize = true;
 			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10));
-			this->label2->Location = System::Drawing::Point(12, 25);
+			this->label2->Location = System::Drawing::Point(12, 0);
 			this->label2->Name = L"label2";
 			this->label2->Size = System::Drawing::Size(48, 17);
 			this->label2->TabIndex = 9;
@@ -172,35 +174,32 @@ namespace memoryui {
 			this->btnDeleteAll->UseVisualStyleBackColor = true;
 			this->btnDeleteAll->Click += gcnew System::EventHandler(this, &MyForm::btnDeleteAll_Click);
 			// 
-			// panel1
+			// chart1
 			// 
-			this->panel1->Location = System::Drawing::Point(377, 130);
-			this->panel1->Name = L"panel1";
-			this->panel1->Size = System::Drawing::Size(401, 133);
-			this->panel1->TabIndex = 11;
-			this->panel1->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &MyForm::panel1_Paint);
-			// 
-			// pictureBox1
-			// 
-			this->pictureBox1->Location = System::Drawing::Point(377, 269);
-			this->pictureBox1->Name = L"pictureBox1";
-			this->pictureBox1->Size = System::Drawing::Size(401, 185);
-			this->pictureBox1->TabIndex = 0;
-			this->pictureBox1->TabStop = false;
-			this->pictureBox1->Click += gcnew System::EventHandler(this, &MyForm::pictureBox1_Click);
+			chartArea1->Name = L"ChartArea1";
+			this->chart1->ChartAreas->Add(chartArea1);
+			legend1->Name = L"Legend1";
+			this->chart1->Legends->Add(legend1);
+			this->chart1->Location = System::Drawing::Point(377, 105);
+			this->chart1->Name = L"chart1";
+			series1->ChartArea = L"ChartArea1";
+			series1->Legend = L"Legend1";
+			series1->Name = L"Series1";
+			this->chart1->Series->Add(series1);
+			this->chart1->Size = System::Drawing::Size(594, 349);
+			this->chart1->TabIndex = 0;
+			this->chart1->Text = L"chart1";
 			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(790, 504);
-			this->Controls->Add(this->pictureBox1);
-			this->Controls->Add(this->panel1);
+			this->ClientSize = System::Drawing::Size(983, 504);
+			this->Controls->Add(this->chart1);
 			this->Controls->Add(this->btnDeleteAll);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->textBox2);
-			this->Controls->Add(this->label1);
 			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->btnLoadFile);
 			this->Controls->Add(this->btnDelete);
@@ -209,7 +208,7 @@ namespace memoryui {
 			this->Name = L"MyForm";
 			this->Text = L"PC Memory";
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->EndInit();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart1))->EndInit();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -239,8 +238,45 @@ namespace memoryui {
 				dataGridView1->Rows[i]->Cells[0]->Value = addressHex;
 				dataGridView1->Rows[i]->Cells[1]->Value = gcnew String(Memory::byteToBinaryString(data[i]).c_str());
 			}
+			updateChart();
 		}
-		
+
+		void InitializeTimer() {
+			timer1 = gcnew Timer();
+			timer1->Interval = 1000; // Интервал 1 секунда
+			timer1->Tick += gcnew EventHandler(this, &MyForm::OnTimerTick);
+			timer1->Start();
+		}
+
+		void OnTimerTick(Object^ sender, EventArgs^ e) {
+			updateChart();
+		}
+
+		void InitializeChart() {
+			chart1->Series->Clear();
+			Series^ series = gcnew Series();
+			series->ChartType = SeriesChartType::Line;
+			chart1->Series->Add(series);
+			chart1->ChartAreas[0]->AxisX->Title = "Время (секунды)";
+			chart1->ChartAreas[0]->AxisY->Title = "Использование памяти";
+			chart1->ChartAreas[0]->AxisY->Maximum = 256; // Максимальное значение использования памяти
+		}
+
+		void updateChart() {
+			Series^ series = chart1->Series[0];
+			auto data = memory->getData();
+			if (series->Points->Count > 60) { // Ограничиваем количество точек на графике
+				series->Points->RemoveAt(0);
+			}
+			int usage = 0;
+			for (size_t i = 0; i < data.size(); i++) {
+				if (data[i] != 0) {
+					usage++;
+				}
+			}
+			series->Points->AddY(usage);
+		}
+
 		
 	#pragma endregion
 		private: System::Void btnWrite_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -281,10 +317,6 @@ namespace memoryui {
 					updateMemoryView();
 				}
 			}
-		}
-		private: System::Void panel1_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) {
-		}
-		private: System::Void pictureBox1_Click(System::Object^ sender, System::EventArgs^ e) {
 		}
 	};
 }
