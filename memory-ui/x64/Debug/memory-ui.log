@@ -1,2 +1,8 @@
-﻿  Memory.obj : обнаружен модуль MSIL; для MSIL последовательная компоновка отключена; выполняется полная компоновка
-  memory-ui.vcxproj -> C:\Users\Anton\Desktop\memory\x64\Debug\memory-ui.exe
+﻿  MyForm.cpp
+C:\Users\Anton\Desktop\Новая папка\memory-ui\memory-ui\Memory.h(59,53): warning C4101: e: неиспользованная локальная переменная
+C:\Users\Anton\Desktop\Новая папка\memory-ui\memory-ui\MyForm.h(222,81): error C2653: MainForm: не является именем класса или пространства имен
+C:\Users\Anton\Desktop\Новая папка\memory-ui\memory-ui\MyForm.h(222,80): error C2276: &: недопустимая операция с выражением привязанной функции-члена
+C:\Users\Anton\Desktop\Новая папка\memory-ui\memory-ui\MyForm.h(222,73): error C3364: System::Windows::Forms::PaintEventHandler: недопустимый аргумент для конструктора делегата; целевой объект делегата должен быть указателем на функцию-член
+C:\Users\Anton\Desktop\Новая папка\memory-ui\memory-ui\MyForm.h(234,52): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Anton\Desktop\Новая папка\memory-ui\memory-ui\MyForm.h(261,12): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Anton\Desktop\Новая папка\memory-ui\memory-ui\MyForm.cpp(7,6): warning C4829: Возможно, неправильные параметры функции main. Рекомендуемый вариант - "int main(Platform::Array<Platform::String^>^ argv)"

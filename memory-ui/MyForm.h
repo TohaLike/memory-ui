@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include "Memory.h"
 #include <msclr/marshal_cppstd.h>
+#include <psapi.h>
 
 namespace memoryui {
 	using namespace System;
@@ -32,6 +33,8 @@ namespace memoryui {
 			delete memory;
 		}
 	private: Memory* memory;
+	private: System::Windows::Forms::PictureBox^ pictureBox;
+	private: System::Windows::Forms::Panel^ memoryUsagePanel;
 	private: System::Windows::Forms::DataGridView^ dataGridView1;
 	private: System::Windows::Forms::Button^ btnWrite;
 	private: System::Windows::Forms::Button^ btnDelete;
@@ -43,13 +46,17 @@ namespace memoryui {
 	private: System::Windows::Forms::Label^ label3;
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::Button^ btnDeleteAll;
+	private: System::Windows::Forms::Timer^ timer1;
+	private: System::Windows::Forms::Panel^ panel1;
+	private: System::Windows::Forms::PictureBox^ pictureBox1;
+	private: System::ComponentModel::IContainer^ components;
 
 	private:
-		System::ComponentModel::Container ^components;
 
-#pragma region Windows Form Designer generated code
+	#pragma region Windows Form Designer generated code
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			this->dataGridView1 = (gcnew System::Windows::Forms::DataGridView());
 			this->btnWrite = (gcnew System::Windows::Forms::Button());
 			this->btnDelete = (gcnew System::Windows::Forms::Button());
@@ -60,7 +67,11 @@ namespace memoryui {
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->btnDeleteAll = (gcnew System::Windows::Forms::Button());
+			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
+			this->panel1 = (gcnew System::Windows::Forms::Panel());
+			this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// dataGridView1
@@ -161,11 +172,30 @@ namespace memoryui {
 			this->btnDeleteAll->UseVisualStyleBackColor = true;
 			this->btnDeleteAll->Click += gcnew System::EventHandler(this, &MyForm::btnDeleteAll_Click);
 			// 
+			// panel1
+			// 
+			this->panel1->Location = System::Drawing::Point(377, 130);
+			this->panel1->Name = L"panel1";
+			this->panel1->Size = System::Drawing::Size(401, 133);
+			this->panel1->TabIndex = 11;
+			this->panel1->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &MyForm::panel1_Paint);
+			// 
+			// pictureBox1
+			// 
+			this->pictureBox1->Location = System::Drawing::Point(377, 269);
+			this->pictureBox1->Name = L"pictureBox1";
+			this->pictureBox1->Size = System::Drawing::Size(401, 185);
+			this->pictureBox1->TabIndex = 0;
+			this->pictureBox1->TabStop = false;
+			this->pictureBox1->Click += gcnew System::EventHandler(this, &MyForm::pictureBox1_Click);
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(790, 504);
+			this->Controls->Add(this->pictureBox1);
+			this->Controls->Add(this->panel1);
 			this->Controls->Add(this->btnDeleteAll);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->label3);
@@ -177,8 +207,9 @@ namespace memoryui {
 			this->Controls->Add(this->btnWrite);
 			this->Controls->Add(this->dataGridView1);
 			this->Name = L"MyForm";
-			this->Text = L"MyForm";
+			this->Text = L"PC Memory";
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -188,7 +219,7 @@ namespace memoryui {
 			this->textBox1->Text = "0";
 			this->textBox2->Text = "0";
 			dataGridView1->ColumnCount = 2;
-			dataGridView1->Columns[0]->Name = "Адрес";
+			dataGridView1->Columns[0]->Name = "Адреса";
 			dataGridView1->Columns[1]->Name = "Ячейки";
 			dataGridView1->Columns["Ячейки"]->Width = 199;
 			DataGridViewCellStyle^ cellStyle = gcnew DataGridViewCellStyle();
@@ -209,8 +240,9 @@ namespace memoryui {
 				dataGridView1->Rows[i]->Cells[1]->Value = gcnew String(Memory::byteToBinaryString(data[i]).c_str());
 			}
 		}
-
-#pragma endregion
+		
+		
+	#pragma endregion
 		private: System::Void btnWrite_Click(System::Object^ sender, System::EventArgs^ e) {
 			try {
 				size_t address = System::Convert::ToUInt32(textBox1->Text);
@@ -249,6 +281,10 @@ namespace memoryui {
 					updateMemoryView();
 				}
 			}
+		}
+		private: System::Void panel1_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) {
+		}
+		private: System::Void pictureBox1_Click(System::Object^ sender, System::EventArgs^ e) {
 		}
 	};
 }

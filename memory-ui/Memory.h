@@ -43,18 +43,20 @@ public:
     void writeFromFile(size_t address, const std::string& filename) {   
         std::ifstream file(filename, std::ios::binary);
         if (!file.is_open()) throw std::runtime_error("Невозможно открыть файл");
-
+        
         for (size_t i = 0; i < data.size(); i++) {
-            std::string line;                
+            std::string line;   
             if (std::getline(file, line)) { 
                 std::istringstream iss(line);
                 std::string remainder;
                 int addr;
-                
-                if (iss >> addr) {
-                    std::getline(iss, remainder);
-                    write(address + addr, std::stoi(remainder));
-                } else {
+                try {
+                    if (iss >> addr) {
+                        std::getline(iss, remainder);
+                        write(address + addr, std::stoi(remainder));
+                    }
+                }
+                catch (const std::invalid_argument& e) {
                     for (size_t j = 0; j < data.size(); j++) {
                         char buffer;
                         if (file.get(buffer) && std::getline(file, line)) {
@@ -66,7 +68,6 @@ public:
             }
         }
     }
-
 
     const std::vector<uint8_t>& getData() const {
         return data;

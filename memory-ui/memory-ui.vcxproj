@@ -121,10 +121,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Memory.cpp" />
+    <ClCompile Include="MemoryUsageGraph.cpp" />
     <ClCompile Include="MyForm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Memory.h" />
+    <ClInclude Include="MemoryUsageGraph.h" />
     <ClInclude Include="MyForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
